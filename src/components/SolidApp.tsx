@@ -56,12 +56,16 @@ const App = () => {
 const PokemonDetails = () => {
   const id = usePokemonID();
   return (
-    <div class="flex-1">
+    <div class="flex-1 flex">
       <Show when={id()}>
-        <PokemonDex id={id()} />
+        <Suspense fallback={"Loading"}>
+          <PokemonDex id={id()} />
+        </Suspense>
       </Show>
       <Show when={!id()}>
-        <div>BO</div>
+        <div class="justify-center items-center flex-1 flex text-2xl font-medium text-zinc-700">
+          <div class="">Select a pokemon to see its stats</div>
+        </div>
       </Show>
     </div>
   );
@@ -101,7 +105,6 @@ const PokemonDex = (props: { id: string }) => {
         name: nameMap[stat.stat.name as keyof typeof nameMap],
         value: stat.base_stat,
       }));
-
       return stats as { name: string; value: number }[];
     },
     placeholderData: keepPreviousData,
@@ -118,7 +121,7 @@ const PokemonDex = (props: { id: string }) => {
   }));
 
   return (
-    <div class="flex flex-col">
+    <div class="flex flex-col flex-1">
       <Show when={pokemon.data}>
         <div class="flex justify-center text-3xl font-semibold py-4">
           {properCase(pokemon.data.name)}
