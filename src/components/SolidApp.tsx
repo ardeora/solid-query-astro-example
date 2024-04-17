@@ -18,6 +18,13 @@ import { getSearchParams, properCase } from "../utils";
 import { isServer } from "solid-js/web";
 
 const PokemonIdContext = createContext<() => string>();
+
+const usePokemonID = () => {
+  const id = useContext(PokemonIdContext);
+  if (!id) throw new Error("PokemonIdContext not found");
+  return id;
+};
+
 const MAX_POKEMONS = 100;
 
 export const SolidApp = (props: { pokemon?: string }) => {
@@ -38,8 +45,6 @@ export const SolidApp = (props: { pokemon?: string }) => {
 };
 
 const App = () => {
-  const id = useContext(PokemonIdContext);
-
   return (
     <div class="flex flex-1 overflow-auto">
       <SideNav />
@@ -49,7 +54,7 @@ const App = () => {
 };
 
 const PokemonDetails = () => {
-  const id = useContext(PokemonIdContext);
+  const id = usePokemonID();
   return (
     <div class="flex-1">
       <Show when={id()}>
@@ -93,7 +98,7 @@ const PokemonDex = (props: { id: string }) => {
         speed: "Speed",
       };
       const stats = data.stats.map((stat: any) => ({
-        name: nameMap[stat.stat.name],
+        name: nameMap[stat.stat.name as keyof typeof nameMap],
         value: stat.base_stat,
       }));
 
@@ -181,7 +186,7 @@ const PokemonDex = (props: { id: string }) => {
 };
 
 const SideNav = () => {
-  const id = useContext(PokemonIdContext);
+  const id = usePokemonID();
 
   const pokemonsList = createQuery(() => ({
     queryKey: ["pokemons"],
